@@ -4,11 +4,23 @@ import Signup from "./signup";
 import Home from "./home";
 import LandingPage from "./Landingpage";
 import LoadStock from "./LoadStock";
+import VehicleLoading from "./VehicleLoading";
+import Notifications from "./Notifications";
+import ReportsPage from "./ReportsPage";
+import ItemManagementPage from "./ItemManagement";
+import VehiclesPage from "./VehiclesPage";
 
 export {
   Login,
   Signup,
   Home,
   LandingPage,
-  LoadStock
+  LoadStock,
+  VehicleLoading,
+  Notifications,
+  ReportsPage,
+  ItemManagementPage,
+  VehiclesPage,
+
+ 
 }

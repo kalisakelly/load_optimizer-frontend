@@ -1,152 +1,133 @@
-import  { useState, useEffect } from 'react';
-import axios from 'axios';
+"use client"
 
+import { useState, useEffect } from "react"
+import axios from "axios"
+import { Scan } from "lucide-react"
+
+// eslint-disable-next-line react/prop-types
 const Table = ({ type }) => {
-  const [data, setData] = useState([]); // Stores the fetched data
-  const [searchTerm, setSearchTerm] = useState(''); // For filtering data
-  const [loading, setLoading] = useState(true); // Loading state
+  const [data, setData] = useState([])
+  const [searchTerm, setSearchTerm] = useState("")
+  const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 20
 
-  // Define API endpoints based on the type (vehicle or stock)
+  // API endpoints configuration remains the same
   const endpoints = {
     vehicle: {
-      findAll: '/vehicle',
-      findOne: '/vehicle/',
-      update: '/vehicle/',
-      delete: '/vehicle/',
+      findAll: "/vehicle",
+      findOne: "/vehicle/",
+      update: "/vehicle/",
+      delete: "/vehicle/",
     },
     stock: {
-      findAll: '/stock',
-      findOne: '/stock/',
-      update: '/stock/',
-      delete: '/stock/',
+      findAll: "/stock",
+      findOne: "/stock/",
+      update: "/stock/",
+      delete: "/stock/",
     },
-  };
+  }
 
-  const apiEndpoints = endpoints[type];
+  const apiEndpoints = endpoints[type]
 
-  // Fetch data from the API
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(`http://localhost:3000${apiEndpoints.findAll}`, {
           withCredentials: true,
-        });
-        setData(response.data);
-        setLoading(false);
+        })
+        setData(response.data)
+        setLoading(false)
       } catch (error) {
-        console.error('Error fetching data:', error.response?.data || error.message);
-        setLoading(false);
+        console.error("Error fetching data:", error.response?.data || error.message)
+        setLoading(false)
       }
-    };
-    fetchData();
-  }, [apiEndpoints]);
-
-  // Handle Delete
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this item?')) return;
-
-    try {
-      await axios.delete(`http://localhost:3000${apiEndpoints.delete}${id}`, {
-        withCredentials: true,
-      });
-      setData((prevData) => prevData.filter((item) => item.id !== id));
-    } catch (error) {
-      console.error('Error deleting item:', error.response?.data || error.message);
     }
-  };
+    fetchData()
+  }, [apiEndpoints])
 
-  // Handle Update
-  const handleUpdate = async (id) => {
-    try {
-      const response = await axios.get(`http://localhost:3000${apiEndpoints.findOne}${id}`, {
-        withCredentials: true,
-      });
-      const updatedData = prompt('Enter updated details (JSON)', JSON.stringify(response.data));
-      if (!updatedData) return;
-
-      const parsedData = JSON.parse(updatedData);
-      await axios.patch(`http://localhost:3000${apiEndpoints.update}${id}`, parsedData, {
-        withCredentials: true,
-      });
-
-      setData((prevData) =>
-        prevData.map((item) => (item.id === id ? { ...item, ...parsedData } : item))
-      );
-    } catch (error) {
-      console.error('Error updating item:', error.response?.data || error.message);
-    }
-  };
-
-  // Filter data based on search term
+  // Filter and pagination logic
   const filteredData = data.filter((item) =>
-    Object.values(item).some((value) =>
-      String(value).toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
+    Object.values(item).some((value) => String(value).toLowerCase().includes(searchTerm.toLowerCase())),
+  )
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage)
 
   return (
-    <div className="p-4">
+    <div className="p-4 bg-gray-50 rounded-lg">
       {/* Search Bar */}
-      <input
-        type="text"
-        placeholder={`Search ${type}s...`}
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="w-full mb-4 p-2 border rounded-md"
-      />
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder={`Search ${type}s...`}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full p-2 border rounded-md"
+        />
+      </div>
 
       {/* Table */}
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-gray-100">
-              {Object.keys(data[0] || {}).map((key) => (
-                <th key={key} className="p-2 border">
-                  {key.charAt(0).toUpperCase() + key.slice(1)}
-                </th>
-              ))}
-              <th className="p-2 border">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredData.length > 0 ? (
-              filteredData.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50">
-                  {Object.values(item).map((value, index) => (
-                    <td key={index} className="p-2 border">
-                      {value}
-                    </td>
-                  ))}
-                  <td className="p-2 border">
-                    <button
-                      onClick={() => handleUpdate(item.id)}
-                      className="mr-2 bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600"
-                    >
-                      Update
-                    </button>
-                    <button
-                      onClick={() => handleDelete(item.id)}
-                      className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={Object.keys(data[0] || {}).length + 1} className="p-2 text-center">
-                  No data found
-                </td>
+        <div className="bg-white rounded-lg overflow-hidden">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="p-3 text-left font-medium text-gray-600">No</th>
+                <th className="p-3 text-left font-medium text-gray-600">Product name</th>
+                <th className="p-3 text-left font-medium text-gray-600">Product barcode</th>
+                <th className="p-3 text-left font-medium text-gray-600">From</th>
+                <th className="p-3 text-left font-medium text-gray-600">Delivery to</th>
+                <th className="p-3 text-left font-medium text-gray-600">Location</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {paginatedData.map((item, index) => (
+                <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                  <td className="p-3 border-t">{startIndex + index + 1}</td>
+                  <td className="p-3 border-t">{item.productName || "Tomatoes"}</td>
+                  <td className="p-3 border-t">
+                    <div className="flex items-center gap-2">
+                      {item.barcode || "#001"}
+                      <Scan className="h-4 w-4 text-gray-400" />
+                    </div>
+                  </td>
+                  <td className="p-3 border-t">{item.from || "Jackson"}</td>
+                  <td className="p-3 border-t">{item.deliveryTo || "John"}</td>
+                  <td className="p-3 border-t">{item.location || "Kigali,Rwanda"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Pagination */}
+          <div className="flex items-center justify-between p-4 border-t">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 rounded-full bg-gray-200 text-gray-600 disabled:opacity-50"
+            >
+              ‹
+            </button>
+            <span className="text-sm text-gray-600">
+              {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
+            >
+              ›
+            </button>
+          </div>
+        </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Table;
+export default Table
+
