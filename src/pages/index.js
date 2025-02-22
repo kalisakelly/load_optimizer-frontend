@@ -9,6 +9,8 @@ import Notifications from "./Notifications";
 import ReportsPage from "./ReportsPage";
 import ItemManagementPage from "./ItemManagement";
 import VehiclesPage from "./VehiclesPage";
+import Stock from "./Stock";
+import OverView from "./Overview";
 
 export {
   Login,
@@ -21,6 +23,8 @@ export {
   ReportsPage,
   ItemManagementPage,
   VehiclesPage,
+  Stock,
+  OverView,
 
  
 }

@@ -1,9 +1,11 @@
 import { useFormik } from 'formik';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 const Login = () => {
   const navigate = useNavigate(); // Hook for navigation
+  const [loginError, setLoginError] = useState(null); // State to handle login errors
 
   const formik = useFormik({
     initialValues: {
@@ -17,20 +19,46 @@ const Login = () => {
         });
 
         if (response.data.message === 'success') {
+          // Retrieve the token from the response data
+          const { token, role } = response.data;
+
+          // Store the token and role in localStorage or another secure storage mechanism
+          localStorage.setItem('userToken', token);
+          localStorage.setItem('userRole', role);
+
           // Redirect to the home page on success
           navigate('/home');
         }
       } catch (error) {
-        console.error('Login failed:', error.response?.data || error.message);
+        // Handle login errors
+        const errorMessage =
+          error.response?.data?.message || error.message || 'An unknown error occurred';
+        setLoginError(errorMessage);
+        console.error('Login failed:', errorMessage);
         alert('Invalid credentials or an error occurred.');
       }
     },
   });
 
+  // Clear the login error when the form is reset
+  useEffect(() => {
+    if (formik.isSubmitting) {
+      setLoginError(null);
+    }
+  }, [formik.isSubmitting]);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <form onSubmit={formik.handleSubmit} className="bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+
+        {/* Display login error if present */}
+        {loginError && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {loginError}
+          </div>
+        )}
+
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Email</label>
           <input

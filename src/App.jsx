@@ -8,7 +8,7 @@ import {
 
 // import './App.css'
 
-import { Login , Signup , Home ,LandingPage , LoadStock,VehicleLoading , Notifications , ReportsPage , ItemManagementPage , VehiclesPage  } from './pages'
+import { Login , Signup , Home ,LandingPage , LoadStock,VehicleLoading , Notifications , ReportsPage , ItemManagementPage , VehiclesPage , Stock , OverView } from './pages'
 import Layout from './components/layout';
 
 
@@ -24,13 +24,14 @@ const route = createBrowserRouter(
 
       {/* Routes with Layout */}
       <Route element={<Layout />}>
-        <Route path="/home" element={<Home />} />
+        <Route path="/home" element={<OverView />} />
         <Route path="/load-stock" element={<LoadStock />} />
         <Route path="/VehicleLoading" element={<VehicleLoading />} />
         <Route path="/Notifications" element={<Notifications />} />
         <Route path="/reports" element={<ReportsPage />} />
         <Route path="/item-management" element={<ItemManagementPage />} />
         <Route path="/vehicles" element={<VehiclesPage />} />
+        <Route path="/stock" element={<Stock />} />
 
         
       </Route>

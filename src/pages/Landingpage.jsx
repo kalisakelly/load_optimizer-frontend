@@ -67,7 +67,7 @@ const LandingPage = () => {
           At Load Optimise, we specialise in providing efficient and cost-effective shipment and delivery services
           tailored to meet your business needs.
         </p>
-        <button className="bg-black text-white px-8 py-3 rounded-full text-lg font-medium">Get Started</button>
+       <a href="/login"> <button className="bg-black text-white px-8 py-3 rounded-full text-lg font-medium">Get Started</button> </a>
 
         {/* Features */}
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">

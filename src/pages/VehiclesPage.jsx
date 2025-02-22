@@ -1,121 +1,124 @@
-"use client"
+import { useState, useEffect } from 'react';
+import VehicleModal from '../components/VehicleModal';
+import { fetchVehicles, deleteVehicle } from '../services/vehicleService';
 
-import { useState } from "react"
-import VehicleCard from "../components/VehicleCard"
-import { Search, Filter } from "lucide-react"
+function VehiclesPage() {
+    const [vehicles, setVehicles] = useState([]);
+    const [currentVehicle, setCurrentVehicle] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
-const sampleVehicles = [
-  {
-    id: 1,
-    name: "Truck A",
-    type: "Heavy Duty",
-    licensePlate: "HD-1234",
-    driver: "John Doe",
-    availableStorage: 15,
-    totalStorage: 20,
-  },
-  {
-    id: 2,
-    name: "Van B",
-    type: "Light Duty",
-    licensePlate: "LD-5678",
-    driver: "Jane Smith",
-    availableStorage: 3,
-    totalStorage: 5,
-  },
-  {
-    id: 3,
-    name: "Truck C",
-    type: "Medium Duty",
-    licensePlate: "MD-9101",
-    driver: "Bob Johnson",
-    availableStorage: 8,
-    totalStorage: 10,
-  },
-  {
-    id: 4,
-    name: "Truck D",
-    type: "Heavy Duty",
-    licensePlate: "HD-1122",
-    driver: "Alice Brown",
-    availableStorage: 18,
-    totalStorage: 20,
-  },
-  {
-    id: 5,
-    name: "Van E",
-    type: "Light Duty",
-    licensePlate: "LD-3344",
-    driver: "Charlie Davis",
-    availableStorage: 4,
-    totalStorage: 5,
-  },
-  {
-    id: 6,
-    name: "Truck F",
-    type: "Medium Duty",
-    licensePlate: "MD-5566",
-    driver: "Eva Wilson",
-    availableStorage: 7,
-    totalStorage: 10,
-  },
-]
+    useEffect(() => {
+        const loadVehicles = async () => {
+            try {
+                const data = await fetchVehicles();
+                setVehicles(data);
+            } catch (error) {
+                console.error('Error fetching vehicles:', error);
+                alert('Failed to load vehicles. Please try again.');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadVehicles();
+    }, []);
 
-const VehiclesPage = () => {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [filterType, setFilterType] = useState("")
+    const openModal = (vehicle = null) => {
+        setCurrentVehicle(vehicle);
+        setIsModalOpen(true);
+    };
 
-  const filteredVehicles = sampleVehicles.filter(
-    (vehicle) =>
-      vehicle.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (filterType === "" || vehicle.type === filterType),
-  )
+    const closeModal = () => {
+        setCurrentVehicle(null);
+        setIsModalOpen(false);
+    };
 
-  return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">Available Vehicles</h1>
+    const handleCreate = async (formData) => {
+      try {
+          await createVehicle(formData);
+          const data = await fetchVehicles();
+          setVehicles(data);
+          closeModal();
+      } catch (error) {
+          console.error('Failed to create vehicle:', error);
+          alert('An error occurred while creating the vehicle.');
+      }
+  };
+  
+  const handleUpdate = async (formData) => {
+      try {
+          await updateVehicle(currentVehicle.id, formData);
+          const data = await fetchVehicles();
+          setVehicles(data);
+          closeModal();
+      } catch (error) {
+          console.error('Failed to update vehicle:', error);
+          alert('An error occurred while updating the vehicle.');
+      }
+  };
 
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8 space-y-4 md:space-y-0">
-          <div className="relative w-full md:w-64">
-            <input
-              type="text"
-              placeholder="Search vehicles..."
-              className="w-full pl-10 pr-4 py-2 border rounded-lg"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-          </div>
+    const handleDelete = async (id) => {
+        try {
+            await deleteVehicle(id);
+            const data = await fetchVehicles();
+            setVehicles(data);
+        } catch (error) {
+            console.error('Failed to delete vehicle:', error);
+            alert('An error occurred while deleting the vehicle.');
+        }
+    };
 
-          <div className="relative w-full md:w-64">
-            <select
-              className="w-full pl-10 pr-4 py-2 border rounded-lg appearance-none"
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
+    return (
+        <div className="p-6">
+            <h1 className="text-2xl font-bold mb-6">Vehicle Management</h1>
+            <button
+                onClick={() => openModal()}
+                className="mb-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
-              <option value="">All Types</option>
-              <option value="Heavy Duty">Heavy Duty</option>
-              <option value="Medium Duty">Medium Duty</option>
-              <option value="Light Duty">Light Duty</option>
-            </select>
-            <Filter className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-          </div>
+                Add Vehicle
+            </button>
+            {isLoading ? (
+                <p>Loading...</p>
+            ) : vehicles.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {vehicles.map((vehicle) => (
+                        <div key={vehicle.id} className="bg-white rounded-lg shadow-md p-6">
+                            <h3 className="text-xl font-semibold">{vehicle.name}</h3>
+                            <p className="text-gray-600">{vehicle.type}</p>
+                            <p className="text-sm">
+                                <span className="font-medium">License Plate:</span> {vehicle.licensePlate}
+                            </p>
+                            <p className="text-sm">
+                                <span className="font-medium">Driver:</span> {vehicle.driver}
+                            </p>
+                            <div className="mt-4 flex space-x-4">
+                                <button
+                                    onClick={() => openModal(vehicle)}
+                                    className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(vehicle.id)}
+                                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <p>No vehicles available</p>
+            )}
+            <VehicleModal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                onSubmit={currentVehicle ? handleUpdate : handleCreate}
+                currentVehicle={currentVehicle}
+            />
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredVehicles.map((vehicle) => (
-            <VehicleCard key={vehicle.id} vehicle={vehicle} />
-          ))}
-        </div>
-
-        {filteredVehicles.length === 0 && (
-          <p className="text-center text-gray-600 mt-8">No vehicles found matching your criteria.</p>
-        )}
-      </div>
-    </div>
-  )
+    );
 }
 
-export default VehiclesPage
-
+export default VehiclesPage;
