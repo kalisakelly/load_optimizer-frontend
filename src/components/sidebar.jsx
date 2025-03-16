@@ -16,19 +16,23 @@ import {
 // Define menu items for different roles
 const adminMenuItems = [
   { icon: LayoutGrid, label: "Overview", href: "/home" },
-  { icon: Box, label: "Dynamic Load Planning", href: "/vehicles" },
+  { icon: Box, label: "Load contraints", href: "/vehicles" },
   { icon: Grid3X3, label: "Items Management", href: "/item-management" },
   { icon: Car, label: "Vehicle Loading", href: "/VehicleLoading" },
-  { icon: Home, label: "Stocks Details", href: "/stock" },
+  { icon: Home, label: "Dynamic Load Planning", href: "/product-list" },
   { icon: FileStack, label: "Load Constraints", href: "/load-stock" },
   { icon: FileText, label: "History and Report", href: "/reports" },
+  { icon: FileText, label: "Verify products", href: "/product-verification" },
   { icon: Bell, label: "Notification", href: "/Notifications" },
+  { icon: MonitorPlay, label: "Add your order", href: "/client-order" },
+  { icon: Scale, label: "Weight Distribution", href: "/VehiclesPage " },
+  
 ];
 
 const logisticsMenuItems = [
   { icon: LayoutGrid, label: "Overview", href: "/home" },
-  { icon: Box, label: "Dynamic Load Planning", href: "/vehicles" },
-  { icon: Scale, label: "Weight Distribution", href: "#" },
+  { icon: Home, label: "Dynamic Load Planning", href: "/product-list" },
+  { icon: Scale, label: "Weight Distribution", href: "/VehiclesPage " },
   { icon: Car, label: "Vehicle Compatibility Checks", href: "/VehicleLoading" },
   { icon: FileStack, label: "Load Constraints", href: "/load-stock" },
   { icon: Home, label: "Stocks Details", href: "/stock" },
@@ -37,9 +41,18 @@ const logisticsMenuItems = [
 
 const driverMenuItems = [
   { icon: LayoutGrid, label: "Overview", href: "/home" },
-  { icon: Car, label: "Vehicle Loading", href: "/VehicleLoading" },
+  { icon: Scale, label: "Weight Distribution", href: "/VehiclesPage " },
+  { icon: FileStack, label: "Load Constraints", href: "#" },
   { icon: Bell, label: "Notification", href: "/Notifications" },
 ];
+
+const UserMenuItems = [
+  { icon: LayoutGrid, label: "Overview", href: "/home" },
+  { icon: MonitorPlay, label: "Add your order", href: "/client-order" },
+  { icon: Bell, label: "Notification", href: "/Notifications" },
+];
+
+
 
 const nonAuthMenuItems = [
   { icon: LayoutGrid, label: "Overview", href: "/home" },
@@ -56,6 +69,8 @@ const Sidebar = () => {
       if (userRole === "admin") return adminMenuItems;
       if (userRole === "logistics") return logisticsMenuItems;
       if (userRole === "driver") return driverMenuItems;
+      if (userRole === "user") return UserMenuItems;
+
     }
     return nonAuthMenuItems; // Fallback for non-authenticated users
   };

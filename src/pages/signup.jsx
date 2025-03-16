@@ -8,6 +8,7 @@ const Signup = () => {
       email: '',
       password: '',
       confirmPassword: '',
+      role: 'user', // Default role is 'user'
     },
     onSubmit: async (values) => {
       try {
@@ -19,8 +20,10 @@ const Signup = () => {
 
         // Prepare the payload for the backend (exclude confirmPassword)
         const signupPayload = {
+          name: values.name,
           email: values.email,
           password: values.password,
+          role: values.role, // Include the role in the payload
         };
 
         // Send the POST request to the signup endpoint
@@ -97,6 +100,22 @@ const Signup = () => {
             onChange={formik.handleChange}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
+        </div>
+
+        {/* Driver Role Checkbox */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700">
+            <input
+              type="checkbox"
+              name="role"
+              checked={formik.values.role === 'driver'}
+              onChange={(e) => {
+                formik.setFieldValue('role', e.target.checked ? 'driver' : 'user');
+              }}
+              className="mr-2"
+            />
+            I am a driver
+          </label>
         </div>
 
         {/* Submit Button */}

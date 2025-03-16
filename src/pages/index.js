@@ -11,7 +11,13 @@ import ItemManagementPage from "./ItemManagement";
 import VehiclesPage from "./VehiclesPage";
 import Stock from "./Stock";
 import OverView from "./Overview";
-
+import Otp from "./verifyemail";
+import ResetPassword from "./resetpassword";
+import ForgotPassword from "./forgotpassword";
+import ClientOrder from "./clientOrder";
+import ProductList from "./ProductList";
+import ProductVerification from "./ProductVerification";
+import VehiclePackaging from "./VehiclePackaging";
 export {
   Login,
   Signup,
@@ -25,6 +31,12 @@ export {
   VehiclesPage,
   Stock,
   OverView,
-
+  Otp,
+  ResetPassword,
+  ForgotPassword,
+  ClientOrder,
+  ProductList,
+  ProductVerification,
+  VehiclePackaging
  
 }

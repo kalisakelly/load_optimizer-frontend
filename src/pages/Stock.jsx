@@ -49,6 +49,7 @@ function Stock() {
 
   // Open modal for adding stock entry
   const openEntryModal = (stockId) => {
+    console.log('Opening entry modal for stockId:', stockId); // Debug stockId
     setSelectedStockId(stockId);
     setIsEntryModalOpen(true);
   };
@@ -111,6 +112,7 @@ function Stock() {
   const handleStockClick = async (stockId) => {
     try {
       const details = await fetchStockDetails(stockId);
+      console.log('Fetched stock details:', details); // Debug stock details
       setStockDetails(details);
     } catch (error) {
       console.error('Failed to fetch stock details:', error);
@@ -160,7 +162,7 @@ function Stock() {
             ))}
           </ul>
           <button
-            onClick={() => openEntryModal(stockDetails.stockId)}
+            onClick={() => openEntryModal(stockDetails.id)}
             className="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
           >
             Add Entry

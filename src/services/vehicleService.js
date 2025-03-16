@@ -40,4 +40,16 @@ const deleteVehicle = async (id) => {
     return response.data;
 };
 
-export { fetchVehicles, fetchVehicleById, createVehicle, updateVehicle, deleteVehicle };
+const loadItemToVehicle = async (vehicleId, loadItemDto) => {
+    const token = getToken();
+    const response = await axios.post(
+        `http://localhost:3000/packaging/load/${vehicleId}`, // Updated endpoint
+        loadItemDto, // Payload containing itemId and quantity
+        {
+            headers: { Authorization: `Bearer ${token}` }, // Include the JWT token
+        }
+    );
+    return response.data;
+};
+
+export { fetchVehicles, fetchVehicleById, createVehicle, updateVehicle, deleteVehicle, loadItemToVehicle };
