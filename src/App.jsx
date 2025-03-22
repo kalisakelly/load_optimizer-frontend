@@ -10,7 +10,6 @@ import {
 
 import { Login ,
    Signup ,
-    Home ,
     LandingPage, 
     LoadStock,
     VehicleLoading,
@@ -26,7 +25,6 @@ import { Login ,
     ClientOrder,
     ProductList,
     ProductVerification,
-    VehiclePackaging
    } from './pages'
 import Layout from './components/layout';
 

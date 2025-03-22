@@ -31,18 +31,19 @@ const Otp = () => {
     const token = otp.join("");
     try {
       const response = await fetch(
-        `http://localhost:3001/auth/verify-email?token=${token}`,
+        `http://localhost:3000/auth/verify-email?token=${token}`,
         {
           method: "POST",
         }
       );
       const result = await response.json();
       if (result.success) {
-        navigate("/"); // Redirect upon successful verification
+        navigate("/login"); 
       } else {
         setError("Invalid or expired OTP");
       }
     } catch (error) {
+      navigate("/login"); 
       setError("An error occurred. Please try again.");
     }
   };

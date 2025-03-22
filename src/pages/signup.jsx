@@ -1,7 +1,9 @@
 import { useFormik } from 'formik';
 import axios from 'axios';
+import { useNavigate } from 'react-router';
 
 const Signup = () => {
+  const navigate = useNavigate()
   const formik = useFormik({
     initialValues: {
       name: '',
@@ -10,6 +12,7 @@ const Signup = () => {
       confirmPassword: '',
       role: 'user', // Default role is 'user'
     },
+   
     onSubmit: async (values) => {
       try {
         // Validate that passwords match
@@ -32,8 +35,7 @@ const Signup = () => {
         });
 
         // Handle success
-        alert('Sign up successful!');
-        console.log(response.data); // Log the response from the server
+        navigate("/verify-email")
       } catch (error) {
         // Handle errors
         if (error.response && error.response.data) {
@@ -133,6 +135,7 @@ const Signup = () => {
             Sign in
           </a>
         </p>
+        
       </form>
     </div>
   );

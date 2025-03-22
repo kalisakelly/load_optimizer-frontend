@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 const Login = () => {
-  const navigate = useNavigate(); // Hook for navigation
-  const [loginError, setLoginError] = useState(null); // State to handle login errors
+  const navigate = useNavigate();
+  const [loginError, setLoginError] = useState(null);
 
   const formik = useFormik({
     initialValues: {
@@ -15,22 +15,19 @@ const Login = () => {
     onSubmit: async (values) => {
       try {
         const response = await axios.post('http://localhost:3000/auth/login', values, {
-          withCredentials: true, // Required for handling cookies
+          withCredentials: true,
         });
 
         if (response.data.message === 'success') {
-          // Retrieve the token from the response data
           const { token, role } = response.data;
 
-          // Store the token and role in localStorage or another secure storage mechanism
-          localStorage.setItem('userToken', token);
+          // Store the token and role in localStorage
+          localStorage.setItem('userToken', token); // Use 'userToken' as the key
           localStorage.setItem('userRole', role);
 
-          // Redirect to the home page on success
           navigate('/home');
         }
       } catch (error) {
-        // Handle login errors
         const errorMessage =
           error.response?.data?.message || error.message || 'An unknown error occurred';
         setLoginError(errorMessage);
@@ -40,7 +37,6 @@ const Login = () => {
     },
   });
 
-  // Clear the login error when the form is reset
   useEffect(() => {
     if (formik.isSubmitting) {
       setLoginError(null);
@@ -52,7 +48,6 @@ const Login = () => {
       <form onSubmit={formik.handleSubmit} className="bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
-        {/* Display login error if present */}
         {loginError && (
           <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
             {loginError}
@@ -89,6 +84,12 @@ const Login = () => {
           Don't have an account?{' '}
           <a href="/signup" className="text-indigo-600 hover:text-indigo-500">
             Sign up
+          </a>
+        </p>
+        <p className="mt-4 text-center text-sm text-gray-600">
+          Forgot password?{' '}
+          <a href="/forgot-password" className="text-indigo-600 hover:text-indigo-500">
+            click here
           </a>
         </p>
       </form>

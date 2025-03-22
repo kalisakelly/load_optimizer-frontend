@@ -1,10 +1,12 @@
 import  { useState } from "react";
+import { useNavigate } from "react-router";
 
 const ResetPassword = () => {
   const [token, setToken] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,7 +21,7 @@ const ResetPassword = () => {
       const result = await response.json();
       if (response.ok) {
         setMessage(result.message);
-        setError("");
+        navigate("/login")
       } else {
         setError(result.message);
         setMessage("");

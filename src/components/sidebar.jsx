@@ -90,7 +90,7 @@ const Sidebar = () => {
       <div className="p-6">
         <div className="flex items-center gap-2 text-xl font-semibold">
           <Cube className="h-6 w-6" />
-          <span>Load Optimise</span>
+          <span>load planning and optimization system</span>
         </div>
       </div>
 

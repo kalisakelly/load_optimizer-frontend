@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
+import axios from 'axios';
 
 const ClientOrder = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +10,8 @@ const ClientOrder = () => {
     details: '',
     destination: '',
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,17 +25,31 @@ const ClientOrder = () => {
     e.preventDefault();
 
     // Validate required fields
-    if (!formData.item_name || !formData.category || !formData.quantity || !formData.details || !formData.destination) {
+    if (
+      !formData.item_name ||
+      !formData.category ||
+      !formData.quantity ||
+      !formData.details ||
+      !formData.destination
+    ) {
       alert('Please fill out all required fields.');
       return;
     }
 
+    // Check if token exists
+    const token = localStorage.getItem('userToken'); // Use 'userToken' instead of 'token'
+    if (!token) {
+      alert('You are not authenticated. Please log in.');
+      navigate('/login');
+      return;
+    }
+
     try {
-      // Send a POST request to the API
       const response = await fetch('http://localhost:3000/product-package', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
@@ -40,11 +58,7 @@ const ClientOrder = () => {
         throw new Error('Failed to submit form');
       }
 
-      const result = await response.json();
-      console.log('Form submitted successfully:', result);
-
-      // Clear the form after successful submission
-      handleClear();
+      navigate('/product-list');
     } catch (error) {
       console.error('Error submitting form:', error);
       alert('An error occurred while submitting the form. Please try again.');
@@ -62,7 +76,6 @@ const ClientOrder = () => {
   };
 
   const handleSave = () => {
-    // Handle save functionality (if needed)
     console.log('Form Data Saved:', formData);
   };
 

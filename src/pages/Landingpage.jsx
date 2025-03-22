@@ -3,47 +3,47 @@ import { Box, Clock, Leaf } from "lucide-react"
 const testimonials = [
   {
     name: "Peter Tracker",
-    image: "/placeholder.svg?height=50&width=50",
+    image: "/sticker.jpg?height=50&width=50",
     text: "A unique outdoor destination feature huge, colourful street murals and sculptures by renowned artists from around the world...",
   },
   {
     name: "Pier Tracker",
-    image: "/placeholder.svg?height=50&width=50",
+    image: "/sticker.jpg?height=50&width=50",
     text: "A unique outdoor destination feature huge, colourful street murals and sculptures by renowned artists from around the world...",
   },
   {
     name: "Paul Tracker",
-    image: "/placeholder.svg?height=50&width=50",
+    image: "/sticker.jpg?height=50&width=50",
     text: "A unique outdoor destination feature huge, colourful street murals and sculptures by renowned artists from around the world...",
   },
   {
     name: "Rachel Tracker",
-    image: "/placeholder.svg?height=50&width=50",
+    image: "/sticker.jpg?height=50&width=50",
     text: "A unique outdoor destination feature huge, colourful street murals and sculptures by renowned artists from around the world...",
   },
   {
     name: "Leon Tracker",
-    image: "/placeholder.svg?height=50&width=50",
+    image: "/sticker.jpg?height=50&width=50",
     text: "A unique outdoor destination feature huge, colourful street murals and sculptures by renowned artists from around the world...",
   },
   {
     name: "Green Tracker",
-    image: "/placeholder.svg?height=50&width=50",
+    image: "/sticker.jpg?height=50&width=50",
     text: "A unique outdoor destination feature huge, colourful street murals and sculptures by renowned artists from around the world...",
   },
   {
     name: "Grey Tracker",
-    image: "/placeholder.svg?height=50&width=50",
+    image: "/sticker.jpg?height=50&width=50",
     text: "A unique outdoor destination feature huge, colourful street murals and sculptures by renowned artists from around the world...",
   },
   {
     name: "Bus Tracker",
-    image: "/placeholder.svg?height=50&width=50",
+    image: "/sticker.jpg?height=50&width=50",
     text: "A unique outdoor destination feature huge, colourful street murals and sculptures by renowned artists from around the world...",
   },
   {
     name: "Samson Tracker",
-    image: "/placeholder.svg?height=50&width=50",
+    image: "/sticker.jpg?height=50&width=50",
     text: "A unique outdoor destination feature huge, colourful street murals and sculptures by renowned artists from around the world...",
   },
 ]
@@ -55,7 +55,7 @@ const LandingPage = () => {
       <div className="max-w-6xl mx-auto px-4 pt-8 pb-16 text-center">
         <div className="flex justify-center mb-8">
           <Box className="h-8 w-8" />
-          <span className="ml-2 text-xl">Load Optimise</span>
+          <span className="ml-2 text-xl">load planning and optimization system</span>
         </div>
 
         <h1 className="text-4xl md:text-5xl font-bold mb-6">
