@@ -52,4 +52,9 @@ const loadItemToVehicle = async (vehicleId, loadItemDto) => {
     return response.data;
 };
 
-export { fetchVehicles, fetchVehicleById, createVehicle, updateVehicle, deleteVehicle, loadItemToVehicle };
+// services/productService.js
+
+
+  
+
+export { fetchVehicles, fetchVehicleById, createVehicle, updateVehicle, deleteVehicle, loadItemToVehicle , };

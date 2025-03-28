@@ -81,6 +81,7 @@ const ProductList = () => {
             key={product.id}
             className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
           >
+            <h2 className="text-xl font-semibold text-green-600 mb-2">{product.id}</h2>
             <h2 className="text-xl font-semibold text-indigo-600 mb-2">{product.item_name}</h2>
             <p className="text-gray-700 mb-2"><strong>Category:</strong> {product.category}</p>
             <p className="text-gray-700 mb-2"><strong>Quantity:</strong> {product.quantity}</p>

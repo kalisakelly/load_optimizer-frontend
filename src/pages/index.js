@@ -18,6 +18,8 @@ import ClientOrder from "./clientOrder";
 import ProductList from "./ProductList";
 import ProductVerification from "./ProductVerification";
 import VehiclePackaging from "./VehiclePackaging";
+import UserManagement from "./usermanagement";
+import DeliveredList from "./DeliveredList";
 export {
   Login,
   Signup,
@@ -37,6 +39,8 @@ export {
   ClientOrder,
   ProductList,
   ProductVerification,
-  VehiclePackaging
+  VehiclePackaging,
+  UserManagement,
+  DeliveredList
  
 }

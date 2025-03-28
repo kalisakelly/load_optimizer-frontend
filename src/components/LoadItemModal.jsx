@@ -1,36 +1,52 @@
 /* eslint-disable react/prop-types */
+// LoadItemModal.js
 
-function LoadItemModal({ isOpen, onClose, onSubmit }) {
+
+function LoadItemModal({ isOpen, onClose, onSubmit, productPackages }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6">Load Item to Vehicle</h2>
+    <div className="modal">
+      <div className="modal-content">
+        <h2 className="text-xl font-bold mb-4">Load Item to Vehicle</h2>
         <form onSubmit={onSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Item ID</label>
-            <input
-              type="text"
+            <label htmlFor="itemId" className="block font-medium mb-2">
+              Select Item
+            </label>
+            <select
+              id="itemId"
               name="itemId"
               required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            />
+              className="block w-full p-2 border rounded"
+            >
+              <option value="">Select an item</option>
+              {productPackages.map((product) => (
+                <option key={product.id} value={product.id}>
+                  {product.id}
+                </option>
+              ))}
+            </select>
           </div>
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700">Quantity</label>
+          <div className="mb-4">
+            <label htmlFor="quantity" className="block font-medium mb-2">
+              Quantity
+            </label>
             <input
               type="number"
+              id="quantity"
               name="quantity"
+              min="1"
+              step="0.01"
               required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full p-2 border rounded"
             />
           </div>
           <div className="flex justify-end space-x-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+              className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
             >
               Cancel
             </button>

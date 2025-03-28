@@ -1,8 +1,13 @@
-import Dashboard from "../components/Dashboard"
-
+import Vehicles from "../components/vehicles"
 function VehicleLoading() {
   return (
-   <Dashboard/>
+
+  <div className="p-8">
+
+    <Vehicles />
+
+  </div>
+   
   )
 }
 
