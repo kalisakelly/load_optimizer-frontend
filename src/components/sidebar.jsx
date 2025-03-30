@@ -9,6 +9,7 @@ import {
   Home,
   FileText,
   Bell,
+  User,
   LogOut,
   CuboidIcon as Cube,
 } from "lucide-react";
@@ -26,6 +27,7 @@ const adminMenuItems = [
   { icon: Bell, label: "Notification", href: "/Notifications" },
   { icon: MonitorPlay, label: "Add your order", href: "/client-order" },
   { icon: Scale, label: "Weight Distribution", href: "/VehiclesPage " },
+  { icon: User, label: "Admin Board",href: "/user-management"},
   
 ];
 
@@ -34,28 +36,31 @@ const logisticsMenuItems = [
   { icon: Home, label: "Dynamic Load Planning", href: "/product-list" },
   { icon: Scale, label: "Weight Distribution", href: "/VehiclesPage " },
   { icon: Car, label: "Vehicle Compatibility Checks", href: "/VehicleLoading" },
-  { icon: FileStack, label: "Load Constraints", href: "/load-stock" },
+  { icon: FileText, label: "Verify products", href: "/product-verification"},
   { icon: Home, label: "Stocks Details", href: "/stock" },
   { icon: Bell, label: "Notification", href: "/Notifications" },
+  { icon: FileText, label: "History and Report", href: "/reports" },
 ];
 
 const driverMenuItems = [
-  { icon: LayoutGrid, label: "Overview", href: "/home" },
+  
   { icon: Scale, label: "Weight Distribution", href: "/VehiclesPage " },
-  { icon: FileStack, label: "Load Constraints", href: "#" },
+  { icon: FileStack, label: "Deliveries", href: "/delivered-list" },
   { icon: Bell, label: "Notification", href: "/Notifications" },
+  { icon: FileText, label: "History and Report", href: "/reports" },
 ];
 
 const UserMenuItems = [
-  { icon: LayoutGrid, label: "Overview", href: "/home" },
   { icon: MonitorPlay, label: "Add your order", href: "/client-order" },
+  { icon: Home, label: "Dynamic Load Planning", href: "/product-list" },
   { icon: Bell, label: "Notification", href: "/Notifications" },
+  { icon: FileText, label: "History and Report", href: "/reports" },
 ];
 
 
 
 const nonAuthMenuItems = [
-  { icon: LayoutGrid, label: "Overview", href: "/home" },
+  { icon: LayoutGrid, label: "Login", href: "/login" },
 ];
 
 const Sidebar = () => {
