@@ -7,6 +7,16 @@ const Login = () => {
   const navigate = useNavigate();
   const [loginError, setLoginError] = useState(null);
 
+  const redirectByRole = (role) => {
+    const roleRoutes = {
+      admin: '/home',
+      logistics: '/home',
+      driver: '/delivered-list',
+      client: '/product-list',
+    };
+    return roleRoutes[role] || '/home';
+  };
+
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -21,11 +31,10 @@ const Login = () => {
         if (response.data.message === 'success') {
           const { token, role } = response.data;
 
-          // Store the token and role in localStorage
-          localStorage.setItem('userToken', token); // Use 'userToken' as the key
+          localStorage.setItem('userToken', token);
           localStorage.setItem('userRole', role);
 
-          navigate('/home');
+          navigate(redirectByRole(role));
         }
       } catch (error) {
         const errorMessage =
@@ -64,6 +73,7 @@ const Login = () => {
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
+
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700">Password</label>
           <input
@@ -74,12 +84,14 @@ const Login = () => {
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
+
         <button
           type="submit"
           className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
         >
           Login
         </button>
+
         <p className="mt-4 text-center text-sm text-gray-600">
           Don't have an account?{' '}
           <a href="/signup" className="text-indigo-600 hover:text-indigo-500">
@@ -89,7 +101,7 @@ const Login = () => {
         <p className="mt-4 text-center text-sm text-gray-600">
           Forgot password?{' '}
           <a href="/forgot-password" className="text-indigo-600 hover:text-indigo-500">
-            click here
+            Click here
           </a>
         </p>
       </form>

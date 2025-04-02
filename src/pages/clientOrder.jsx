@@ -6,11 +6,12 @@ const ClientOrder = () => {
   const [formData, setFormData] = useState({
     item_name: '',
     category: '',
-    quantity: 0,
+    quantity: '',
     details: '',
     destination: '',
   });
-
+  
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -24,76 +25,55 @@ const ClientOrder = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate required fields
-    if (
-      !formData.item_name ||
-      !formData.category ||
-      !formData.quantity ||
-      !formData.details ||
-      !formData.destination
-    ) {
-      alert('Please fill out all required fields.');
+    if (Object.values(formData).some((field) => !field.trim())) {
+      alert('All fields are required.');
       return;
     }
 
-    // Check if token exists
-    const token = localStorage.getItem('userToken'); // Use 'userToken' instead of 'token'
+    const token = localStorage.getItem('userToken');
     if (!token) {
       alert('You are not authenticated. Please log in.');
       navigate('/login');
       return;
     }
 
+    setLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/product-package', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
+      const response = await axios.post('http://localhost:3000/product-package', formData, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to submit form');
+      
+      if (response.status === 201) {
+        alert('Order submitted successfully!');
+        navigate('/product-list');
       }
-
-      navigate('/product-list');
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('An error occurred while submitting the form. Please try again.');
+      alert('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleClear = () => {
-    setFormData({
-      item_name: '',
-      category: '',
-      quantity: 0,
-      details: '',
-      destination: '',
-    });
-  };
-
-  const handleSave = () => {
-    console.log('Form Data Saved:', formData);
-  };
-
+  const handleClear = () => setFormData({ item_name: '', category: '', quantity: '', details: '', destination: '' });
+  
   return (
-    <div className="container mx-auto px-4 py-4">
-      <h1 className="text-3xl font-bold mb-6 text-center text-indigo-600">Product Package Form</h1>
-      <form onSubmit={handleSubmit} className="container mx-auto space-y-6 bg-white p-8 rounded-lg shadow-lg w-25">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Item Name</label>
-          <input
-            type="text"
-            name="item_name"
-            value={formData.item_name}
-            onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            required
-          />
-        </div>
+    <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
+      <h2 className="text-2xl font-bold text-center text-indigo-600 mb-6">Product Package Form</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {['item_name', 'details', 'destination'].map((field) => (
+          <div key={field}>
+            <label className="block text-sm font-medium text-gray-700 capitalize">{field.replace('_', ' ')}</label>
+            <input
+              type="text"
+              name={field}
+              value={formData[field]}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              required
+            />
+          </div>
+        ))}
 
         <div>
           <label className="block text-sm font-medium text-gray-700">Category</label>
@@ -101,10 +81,10 @@ const ClientOrder = () => {
             name="category"
             value={formData.category}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500"
             required
           >
-            <option value="" disabled>Select a category</option>
+            <option value="">Select a category</option>
             <option value="tangible">Tangible</option>
             <option value="intangible">Intangible</option>
           </select>
@@ -117,54 +97,26 @@ const ClientOrder = () => {
             name="quantity"
             value={formData.quantity}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            min="1"
+            className="w-full px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500"
             required
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Details</label>
-          <textarea
-            name="details"
-            value={formData.details}
-            onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Destination</label>
-          <input
-            type="text"
-            name="destination"
-            value={formData.destination}
-            onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            required
-          />
-        </div>
-
-        <div className="flex space-x-4 justify-between">
+        <div className="flex space-x-4">
           <button
             type="submit"
-            className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+            className="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 disabled:opacity-50"
+            disabled={loading}
           >
-            Submit
+            {loading ? 'Submitting...' : 'Submit'}
           </button>
           <button
             type="button"
             onClick={handleClear}
-            className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
+            className="flex-1 bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
           >
             Clear
-          </button>
-          <button
-            type="button"
-            onClick={handleSave}
-            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
-          >
-            Save
           </button>
         </div>
       </form>
