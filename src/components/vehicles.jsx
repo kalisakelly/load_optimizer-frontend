@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FiEdit, FiTrash2, FiRefreshCw, FiPlus } from 'react-icons/fi';
+import { FiEdit, FiTrash2, FiRefreshCw, FiPlus, FiImage } from 'react-icons/fi';
 
 function Vehicles() {
   const [vehicles, setVehicles] = useState([]);
@@ -13,10 +13,13 @@ function Vehicles() {
     name: '',
     type: '',
     description: '',
+    image: null,
     capacity: '',
     driver: '',
   });
   const [isReloading, setIsReloading] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [editImagePreview, setEditImagePreview] = useState(null);
 
   // Fetch vehicles and drivers on load
   useEffect(() => {
@@ -54,59 +57,100 @@ function Vehicles() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewVehicle((prev) => ({ ...prev, [name]: value }));
+    setNewVehicle(prev => ({ ...prev, [name]: value }));
   };
 
   const handleEditInputChange = (e) => {
     const { name, value } = e.target;
-    setCurrentVehicle((prev) => ({ ...prev, [name]: value }));
+    setCurrentVehicle(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setNewVehicle(prev => ({ ...prev, image: file }));
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleEditFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setCurrentVehicle(prev => ({ ...prev, image: file }));
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const vehicleToSubmit = {
-        ...newVehicle,
-        driver: parseInt(newVehicle.driver, 10),
-        capacity: parseFloat(newVehicle.capacity),
-      };
-
+      const formData = new FormData();
+      formData.append('name', newVehicle.name);
+      formData.append('type', newVehicle.type);
+      formData.append('description', newVehicle.description);
+      formData.append('capacity', newVehicle.capacity);
+      formData.append('driver', newVehicle.driver); 
+      if (newVehicle.image) {
+        formData.append('image', newVehicle.image);
+      }
+  
       const response = await fetch('http://localhost:3000/vehicle', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(vehicleToSubmit),
+        body: formData,
       });
-
+  
       if (!response.ok) throw new Error('Failed to create vehicle');
-
+  
       const newVehicleData = await response.json();
-      setVehicles((prev) => [...prev, newVehicleData]);
+
+      console.log(newVehicleData)
+  
+      setVehicles(prev => [...prev, newVehicleData]);
       setIsModalOpen(false);
-      setNewVehicle({ name: '', type: '', description: '', capacity: '', driver: '' });
+      setNewVehicle({
+        name: '',
+        type: '',
+        description: '',
+        image: null,
+        capacity: '',
+        driver: '',
+      });
+      setImagePreview(null);
       alert('Vehicle created successfully!');
     } catch (error) {
       console.error('Error creating vehicle:', error);
       alert('Failed to create vehicle');
     }
   };
-
+  
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const vehicleToUpdate = {
-        ...currentVehicle,
-        driver: parseInt(currentVehicle.driver, 10),
-        capacity: parseFloat(currentVehicle.capacity),
-      };
+      const formData = new FormData();
+      formData.append('name', currentVehicle.name);
+      formData.append('type', currentVehicle.type);
+      formData.append('description', currentVehicle.description);
+      formData.append('capacity', currentVehicle.capacity);
+      formData.append('driver', currentVehicle.driver);
+      if (currentVehicle.image && typeof currentVehicle.image !== 'string') {
+        formData.append('image', currentVehicle.image);
+      }
 
       const response = await fetch(`http://localhost:3000/vehicle/${currentVehicle.id}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(vehicleToUpdate),
+        body: formData,
       });
 
       if (!response.ok) throw new Error('Failed to update vehicle');
@@ -114,6 +158,7 @@ function Vehicles() {
       const updatedVehicle = await response.json();
       setVehicles(vehicles.map(v => v.id === updatedVehicle.id ? updatedVehicle : v));
       setIsEditModalOpen(false);
+      setEditImagePreview(null);
       alert('Vehicle updated successfully!');
     } catch (error) {
       console.error('Error updating vehicle:', error);
@@ -166,6 +211,7 @@ function Vehicles() {
       ...vehicle,
       driver: vehicle.driver?.id?.toString() || '',
     });
+    setEditImagePreview(vehicle.image || null);
     setIsEditModalOpen(true);
   };
 
@@ -198,6 +244,7 @@ function Vehicles() {
           <thead className="bg-gray-100">
             <tr>
               <th className="px-4 py-3 font-medium">ID</th>
+              <th className="px-4 py-3 font-medium">Image</th>
               <th className="px-4 py-3 font-medium">Name</th>
               <th className="px-4 py-3 font-medium">Type</th>
               <th className="px-4 py-3 font-medium">Description</th>
@@ -213,6 +260,21 @@ function Vehicles() {
             {vehicles.map((vehicle) => (
               <tr key={vehicle.id} className="hover:bg-gray-50">
                 <td className="px-4 py-3">{vehicle.id}</td>
+                <td className="px-4 py-3">
+                  {vehicle.image ? (
+                    <div className="w-10 h-10 rounded-full overflow-hidden">
+                      <img 
+                        src={vehicle.image} 
+                        alt={vehicle.name} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                      <FiImage className="text-gray-400" />
+                    </div>
+                  )}
+                </td>
                 <td className="px-4 py-3">{vehicle.name}</td>
                 <td className="px-4 py-3">{vehicle.type || 'N/A'}</td>
                 <td className="px-4 py-3">{vehicle.description}</td>
@@ -301,7 +363,7 @@ function Vehicles() {
                 />
               </div>
               <div className="mb-4">
-                <label className="block mb-2">Capacity (kg)</label>
+                <label className="block mb-2">Capacity (m3)</label>
                 <input
                   type="number"
                   name="capacity"
@@ -312,27 +374,51 @@ function Vehicles() {
                 />
               </div>
               <div className="mb-4">
+                <label className="block mb-2">Vehicle Image</label>
+                <div className="flex items-center gap-4">
+                  <label className="cursor-pointer">
+                    <span className="bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 px-4 rounded-lg inline-block">
+                      Choose File
+                    </span>
+                    <input
+                      type="file"
+                      name="image"
+                      onChange={handleFileChange}
+                      className="hidden"
+                      accept="image/*"
+                    />
+                  </label>
+                  {imagePreview && (
+                    <div className="w-16 h-16 rounded-md overflow-hidden border">
+                      <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="mb-4">
                 <label className="block mb-2">Driver</label>
                 <select
-                  name="driver"
-                  value={newVehicle.driver}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded-lg"
-                  required
-                >
-                  <option value="">Select driver</option>
-                  {drivers.map((driver) => (
-                    <option key={driver.id} value={driver.id}>
-                      {driver.name}
-                    </option>
-                  ))}
-                </select>
+                    name="driver"
+                    value={newVehicle.driver}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border rounded-lg"
+                  >
+                    <option value="">Select driver</option>
+                    {drivers.map((driver) => (
+                      <option key={driver.id} value={driver.id}>
+                        {driver.name}
+                      </option>
+                    ))}
+                  </select>
               </div>
               <div className="flex justify-end space-x-2">
                 <button
                   type="button"
                   className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    setImagePreview(null);
+                  }}
                 >
                   Cancel
                 </button>
@@ -403,6 +489,32 @@ function Vehicles() {
                 />
               </div>
               <div className="mb-4">
+                <label className="block mb-2">Vehicle Image</label>
+                <div className="flex items-center gap-4">
+                  <label className="cursor-pointer">
+                    <span className="bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 px-4 rounded-lg inline-block">
+                      Change Image
+                    </span>
+                    <input
+                      type="file"
+                      name="image"
+                      onChange={handleEditFileChange}
+                      className="hidden"
+                      accept="image/*"
+                    />
+                  </label>
+                  {(editImagePreview || currentVehicle.image) && (
+                    <div className="w-16 h-16 rounded-md overflow-hidden border">
+                      <img 
+                        src={editImagePreview || currentVehicle.image} 
+                        alt="Preview" 
+                        className="w-full h-full object-cover" 
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="mb-4">
                 <label className="block mb-2">Driver</label>
                 <select
                   name="driver"
@@ -423,7 +535,10 @@ function Vehicles() {
                 <button
                   type="button"
                   className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
-                  onClick={() => setIsEditModalOpen(false)}
+                  onClick={() => {
+                    setIsEditModalOpen(false);
+                    setEditImagePreview(null);
+                  }}
                 >
                   Cancel
                 </button>
