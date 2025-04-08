@@ -84,10 +84,10 @@ function UserManagement() {
 
     
     <div className="min-h-screen bg-gray-50/30 p-4 md:p-6">
-       <div className="lg:col-span-3">
+       {/* <div className="lg:col-span-3">
             <h2 className="mb-4 text-lg font-semibold">Client & Order Management Summary</h2>
              <OrderTable />
-        </div>
+        </div> */}
     <h2 className="flex justify-start mb-4 text-lg font-semibold p-2 mt-4">Users management</h2>
       <div className="flex justify-end mb-4 pt-2">
       <button

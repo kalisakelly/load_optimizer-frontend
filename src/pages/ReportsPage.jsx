@@ -10,6 +10,7 @@ const ReportsPage = () => {
   const [startDate, endDate] = dateRange
   const [selectedReportType, setSelectedReportType] = useState("delivery")
   const [isGenerating, setIsGenerating] = useState(false)
+  const [reportFormat, setReportFormat] = useState("PDF")
 
   const reportTypes = [
     { id: "delivery", name: "Delivery Reports", icon: FileText },
@@ -41,12 +42,52 @@ const ReportsPage = () => {
     },
   ]
 
-  const handleGenerateReport = () => {
+  const downloadExcelReport = async () => {
     setIsGenerating(true)
-    // Simulate report generation
-    setTimeout(() => {
+    try {
+      const response = await fetch('http://localhost:3000/product-package/user-details/excel')
+      if (!response.ok) {
+        throw new Error('Failed to download report')
+      }
+      
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'productpackages.xlsx'
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      a.remove()
+      
+      // Add to recent reports
+      const newReport = {
+        id: recentReports.length + 1,
+        name: `Product Packages Report - ${new Date().toLocaleDateString()}`,
+        type: "Excel",
+        date: new Date().toLocaleDateString(),
+        size: `${(blob.size / (1024 * 1024)).toFixed(1)} MB`
+      }
+      recentReports.unshift(newReport)
+      
+    } catch (error) {
+      console.error('Error downloading report:', error)
+      alert('Failed to download report')
+    } finally {
       setIsGenerating(false)
-    }, 2000)
+    }
+  }
+
+  const handleGenerateReport = () => {
+    if (reportFormat === "Excel") {
+      downloadExcelReport()
+    } else {
+      setIsGenerating(true)
+      // Simulate report generation for other formats
+      setTimeout(() => {
+        setIsGenerating(false)
+      }, 2000)
+    }
   }
 
   return (
@@ -103,10 +144,14 @@ const ReportsPage = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Format</label>
-                <select className="w-full p-2 border rounded-lg">
-                  <option>PDF</option>
-                  <option>Excel</option>
-                  <option>CSV</option>
+                <select 
+                  className="w-full p-2 border rounded-lg"
+                  value={reportFormat}
+                  onChange={(e) => setReportFormat(e.target.value)}
+                >
+                  <option value="PDF">PDF</option>
+                  <option value="Excel">Excel</option>
+                  <option value="CSV">CSV</option>
                 </select>
               </div>
             </div>
@@ -172,7 +217,15 @@ const ReportsPage = () => {
                     <td className="py-3 px-4">{report.date}</td>
                     <td className="py-3 px-4">{report.size}</td>
                     <td className="py-3 px-4">
-                      <button className="text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                      <button 
+                        className="text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                        onClick={() => {
+                          if (report.type === "Excel") {
+                            downloadExcelReport()
+                          }
+                          // Add other format handlers here
+                        }}
+                      >
                         <Download className="h-4 w-4" />
                         Download
                       </button>
@@ -189,4 +242,3 @@ const ReportsPage = () => {
 }
 
 export default ReportsPage
-

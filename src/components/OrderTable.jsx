@@ -40,6 +40,7 @@ export default function OrderTable() {
           <tr>
             <th className="px-4 py-3 font-medium">Client Name</th>
             <th className="px-4 py-3 font-medium">Order ID</th>
+            <th className="px-4 py-3 font-medium">Category</th>
             <th className="px-4 py-3 font-medium">Goods</th>
             <th className="px-4 py-3 font-medium">Quantity</th>
             <th className="px-4 py-3 font-medium">Delivery Address</th>
@@ -55,6 +56,7 @@ export default function OrderTable() {
             <tr key={order.id} className="hover:bg-gray-50">
               <td className="px-4 py-3">{order.owner ? order.owner.name : 'null'}</td>
               <td className="px-4 py-3">{order.id}</td>
+              <td className="px-4 py-3">{order.category}</td>
               <td className="px-4 py-3">{order.item_name}</td>
               <td className="px-4 py-3">{order.quantity}</td>
               <td className="px-4 py-3">{order.destination}</td>

@@ -20,6 +20,7 @@ import ProductVerification from "./ProductVerification";
 import VehiclePackaging from "./VehiclePackaging";
 import UserManagement from "./usermanagement";
 import DeliveredList from "./DeliveredList";
+import PackagingsPage from "./weightDistribution"
 export {
   Login,
   Signup,
@@ -41,6 +42,7 @@ export {
   ProductVerification,
   VehiclePackaging,
   UserManagement,
-  DeliveredList
+  DeliveredList,
+  PackagingsPage
  
 }

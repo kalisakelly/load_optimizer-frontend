@@ -16,32 +16,33 @@ import {
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const menuItemsByRole = {
   admin: [
     { icon: LayoutGrid, label: "Overview", href: "/home" },
-    { icon: Box, label: "Load Progression", href: "/vehicles" },
-    { icon: Home, label: "Dynamic Load Planning", href: "/product-list" },
     { icon: MonitorPlay, label: "Add Orders", href: "/client-order" },
-    { icon: Car, label: "Fleet Management", href: "/vehicle-loading" },
-    { icon: FileStack, label: "Load Constraints", href: "/load-stock" },
-    { icon: FileText, label: "History & Reports", href: "/reports" },
+    { icon: Home, label: "Dynamic Load Planning", href: "/product-list" },
     { icon: FileText, label: "Verify Products", href: "/product-verification" },
+    { icon: Box, label: "Load Progression", href: "/vehicles" },
+    { icon: Car, label: "Vehicle Management", href: "/VehicleLoading" },
+    { icon: FileStack, label : "Weight Distribution", href : "/packaging"},
+    { icon: FileText, label: "History & Reports", href: "/reports" },
     { icon: Bell, label: "Notifications", href: "/notifications" },
     { icon: User, label: "Admin Board", href: "/user-management" },
   ],
   logistics: [
     { icon: LayoutGrid, label: "Overview", href: "/home" },
+    { icon: MonitorPlay, label: "Add Orders", href: "/client-order" },
     { icon: Home, label: "Dynamic Load Planning", href: "/product-list" },
-    { icon: Scale, label: "Weight Distribution", href: "/vehicles-page" },
-    { icon: Car, label: "Vehicle Compatibility Checks", href: "/vehicle-loading" },
     { icon: FileText, label: "Verify Products", href: "/product-verification" },
-    { icon: Home, label: "Stock Details", href: "/stock" },
+    { icon: Box, label: "Load Progression", href: "/vehicles" },
+    { icon: Car, label: "Vehicle Management", href: "/VehicleLoading" },
+    { icon: FileStack, label : "Weight Distribution", href : "/packaging"},
     { icon: Bell, label: "Notifications", href: "/notifications" },
     { icon: FileText, label: "History & Reports", href: "/reports" },
   ],
   driver: [
-    { icon: Scale, label: "Weight Distribution", href: "/vehicles-page" },
     { icon: FileStack, label: "Deliveries", href: "/delivered-list" },
     { icon: Bell, label: "Notifications", href: "/notifications" },
     { icon: FileText, label: "History & Reports", href: "/reports" },
@@ -59,6 +60,7 @@ const Sidebar = () => {
   const [userRole, setUserRole] = useState("guest");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("userToken");
@@ -94,6 +96,7 @@ const Sidebar = () => {
     localStorage.removeItem("userRole");
     setIsAuthenticated(false);
     setUserRole("guest");
+    navigate('/login')
     setUser(null);
   };
 

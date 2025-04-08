@@ -26,7 +26,8 @@ import { Login ,
     ProductList,
     ProductVerification,
     UserManagement,
-    DeliveredList
+    DeliveredList,
+    PackagingsPage
    } from './pages'
 import Layout from './components/layout';
 
@@ -58,6 +59,7 @@ const route = createBrowserRouter(
         <Route path="/product-verification" element={<ProductVerification />} />
         <Route path="/user-management" element={<UserManagement />} />
         <Route path="/delivered-list" element={<DeliveredList />} />
+        <Route path="/packaging" element={<PackagingsPage/>}/>
 
 
         

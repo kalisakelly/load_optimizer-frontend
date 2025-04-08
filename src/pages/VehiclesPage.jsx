@@ -111,7 +111,7 @@ function VehiclesPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6">Vehicle Management</h1>
+      <h1 className="text-3xl font-bold mb-6 ">Loading Progression</h1>
       {isLoading ? (
         <div className="flex justify-center items-center">
           <div className="loader border-t-4 border-blue-500 rounded-full w-12 h-12"></div>
