@@ -14,7 +14,7 @@ const Login = () => {
       driver: '/delivered-list',
       client: '/product-list',
     };
-    return roleRoutes[role] || '/home';
+    return roleRoutes[role] || '/product-list';
   };
 
   const formik = useFormik({

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { FiEdit, FiTrash2, FiRefreshCw, FiPlus, FiImage } from 'react-icons/fi';
 
+
 function Vehicles() {
   const [vehicles, setVehicles] = useState([]);
   const [drivers, setDrivers] = useState([]);
@@ -15,8 +16,10 @@ function Vehicles() {
     description: '',
     image: null,
     capacity: '',
+    space_available: '',
     driver: '',
-  });
+    isinmotion: false,
+  });  
   const [isReloading, setIsReloading] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [editImagePreview, setEditImagePreview] = useState(null);
@@ -100,8 +103,10 @@ function Vehicles() {
       formData.append('name', newVehicle.name);
       formData.append('type', newVehicle.type);
       formData.append('description', newVehicle.description);
-      formData.append('capacity', newVehicle.capacity);
-      formData.append('driver', newVehicle.driver); 
+      formData.append('capacity', Number(newVehicle.capacity));
+      formData.append('space_available', Number(newVehicle.capacity)); // or another value if custom
+      formData.append('driver', newVehicle.driver); // already a string
+      formData.append('isinmotion', newVehicle.isinmotion ? 'true' : 'false');
       if (newVehicle.image) {
         formData.append('image', newVehicle.image);
       }
@@ -114,10 +119,9 @@ function Vehicles() {
       if (!response.ok) throw new Error('Failed to create vehicle');
   
       const newVehicleData = await response.json();
-
-      console.log(newVehicleData)
-  
       setVehicles(prev => [...prev, newVehicleData]);
+  
+      // Reset form
       setIsModalOpen(false);
       setNewVehicle({
         name: '',
@@ -125,7 +129,9 @@ function Vehicles() {
         description: '',
         image: null,
         capacity: '',
+        space_available: '',
         driver: '',
+        isinmotion: false,
       });
       setImagePreview(null);
       alert('Vehicle created successfully!');
@@ -134,6 +140,7 @@ function Vehicles() {
       alert('Failed to create vehicle');
     }
   };
+  
   
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -394,6 +401,17 @@ function Vehicles() {
                     </div>
                   )}
                 </div>
+              </div>
+              <div className="mb-4">
+                <label className="block mb-2">Is In Motion</label>
+                <input
+                  type="checkbox"
+                  name="isinmotion"
+                  checked={newVehicle.isinmotion}
+                  onChange={(e) =>
+                    setNewVehicle((prev) => ({ ...prev, isinmotion: e.target.checked }))
+                  }
+                />
               </div>
               <div className="mb-4">
                 <label className="block mb-2">Driver</label>

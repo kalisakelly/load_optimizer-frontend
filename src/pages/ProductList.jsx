@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { jwtDecode } from 'jwt-decode';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -7,43 +8,71 @@ const ProductList = () => {
     destination: '',
   });
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [token, setToken] = useState('');
+  const [userId, setUserId] = useState(null);
+  const [userRole, setUserRole] = useState('guest');
 
-  // Fetch all products on component mount
+  // Decode token and get role & userId
   useEffect(() => {
+    const storedToken = localStorage.getItem('userToken');
+    if (!storedToken) return;
+
+    try {
+      const decoded = jwtDecode(storedToken);
+      setUserId(decoded.id);
+      setUserRole(decoded.role || 'guest');
+      setToken(storedToken);
+    } catch (err) {
+      console.error('Invalid token:', err);
+    }
+  }, []);
+
+  // Fetch products based on role
+  useEffect(() => {
+    if (!token || !userRole) return;
+
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://localhost:3000/product-package');
+        const url =
+          userRole === 'user'
+            ? `http://localhost:3000/product-package/mypackages/${userId}`
+            : 'http://localhost:3000/product-package';
+
+        const response = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         if (!response.ok) {
           throw new Error('Failed to fetch products');
         }
+
         const data = await response.json();
         setProducts(data);
-        setFilteredProducts(data); // Initialize filtered products with all products
+        setFilteredProducts(data);
       } catch (error) {
         console.error('Error fetching products:', error);
       }
     };
 
     fetchProducts();
-  }, []);
+  }, [token, userId, userRole]);
 
-  // Handle search input changes
+  // Handle search input
   const handleSearchChange = (e) => {
     const { name, value } = e.target;
-    setSearchQuery({
-      ...searchQuery,
-      [name]: value,
-    });
+    setSearchQuery((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Filter products based on search query
+  // Filter logic
   useEffect(() => {
     const filtered = products.filter((product) => {
       const matchesName = product.item_name
-        .toLowerCase()
+        ?.toLowerCase()
         .includes(searchQuery.item_name.toLowerCase());
       const matchesDestination = product.destination
-        .toLowerCase()
+        ?.toLowerCase()
         .includes(searchQuery.destination.toLowerCase());
       return matchesName && matchesDestination;
     });
@@ -92,28 +121,31 @@ const ProductList = () => {
             <div className="flex space-x-4 mt-4">
               <span
                 className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                  product.verified
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
+                  product.verified ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}
               >
                 {product.verified ? 'Verified' : 'Not Verified'}
               </span>
               <span
                 className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                  product.completed
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
+                  product.completed ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}
               >
                 {product.completed ? 'Completed' : 'In Progress'}
+              </span>
+              <span
+                className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                  product.delivered ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                }`}
+              >
+                {product.delivered ? 'Delivered' : 'Not Delivered'}
               </span>
             </div>
           </div>
         ))}
       </div>
 
-      {/* No Results Message */}
+      {/* No Results */}
       {filteredProducts.length === 0 && (
         <div className="text-center text-gray-600 mt-8">
           No products found matching your search criteria.

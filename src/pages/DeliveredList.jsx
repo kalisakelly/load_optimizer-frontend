@@ -1,20 +1,39 @@
 import { useEffect, useState } from 'react';
+import { jwtDecode } from 'jwt-decode';
 
 const DeliveredList = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [token, setToken] = useState('');
+  const [driverId, setDriverId] = useState('');
 
-  const token = localStorage.getItem('userToken'); // Use 'userToken' for consistency
-  const driverId = localStorage.getItem('userId'); // Fetch driver ID from localStorage
+  useEffect(() => {
+    const tokenFromStorage = localStorage.getItem('userToken');
+
+    if (!tokenFromStorage) {
+      setError('User not authenticated.');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const decoded = jwtDecode(tokenFromStorage);
+      const userId = decoded.id;
+
+      setToken(tokenFromStorage);
+      setDriverId(userId);
+    } catch (err) {
+      console.error('Invalid token:', err);
+      setError('Invalid authentication token.');
+      setLoading(false);
+      return;
+    }
+  }, []);
 
   useEffect(() => {
     const fetchProducts = async () => {
-      if (!driverId) {
-        setError('Driver ID not found.');
-        setLoading(false);
-        return;
-      }
+      if (!token || !driverId) return;
 
       try {
         const response = await fetch(`http://localhost:3000/vehicle/packaging/driver/${driverId}`, {
@@ -67,13 +86,8 @@ const DeliveredList = () => {
     }
   };
 
-  if (loading) {
-    return <div className="text-center text-gray-600 mt-8">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center text-red-600 mt-8">{error}</div>;
-  }
+  if (loading) return <div className="text-center text-gray-600 mt-8">Loading...</div>;
+  if (error) return <div className="text-center text-red-600 mt-8">{error}</div>;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -94,21 +108,21 @@ const DeliveredList = () => {
           <tbody className="bg-white divide-y divide-gray-200">
             {products.map((product) => (
               <tr key={product.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.item_name || 'No item'}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.category || 'No category'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.item.item_name || 'No item'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.item.category || 'No category'}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.quantity}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.destination || 'No destination'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.item.destination || 'No destination'}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                    product.delivered ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    product.item.delivered ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                   }`}>
-                    {product.delivered ? 'Delivered' : 'Not Delivered'}
+                    {product.item.delivered ? 'Delivered' : 'Not Delivered'}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {!product.delivered && (
+                  {!product.item.delivered && (
                     <button
-                      onClick={() => handleDeliver(product.id)}
+                      onClick={() => handleDeliver(product.item.id)}
                       className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
                     >
                       Deliver
