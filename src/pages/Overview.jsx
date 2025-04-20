@@ -19,7 +19,7 @@ export default function OverView() {
       try {
         const [packagingResponse, vehicleResponse, usersResponse] = await Promise.all([
           axios.get('http://localhost:3000/packaging/count/packagings'),
-          axios.get('http://localhost:3000/vehicle/count/vehicles'),
+          axios.get('http://localhost:3000/product-package/count/products'),
           axios.get('http://localhost:3000/users/count/users'),
         ]);
 
